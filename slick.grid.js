@@ -1242,6 +1242,10 @@ if (typeof Slick === "undefined") {
           cellCss += (" active");
         }
 
+        if (metadata && metadata.cssCellClasses && metadata.cssCellClasses[m.id]) {
+            cellCss += " " + metadata.cssCellClasses[m.id]
+        }
+
         // TODO:  merge them together in the setter
         for (var key in cellCssClasses) {
           if (cellCssClasses[key][row] && cellCssClasses[key][row][m.id]) {
