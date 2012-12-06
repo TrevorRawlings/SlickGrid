@@ -35,9 +35,19 @@
 
     function handleDragStart(e, dd) {
       var cell = _grid.getCellFromEvent(e);
-      if (_grid.getEditorLock().isActive() || !/move|selectAndMove/.test(_grid.getColumns()[cell.cell].behavior)) {
-        return false;
+
+      if (/move|selectAndMove/.test(_grid.getColumns()[cell.cell].behavior)) {
+          if (_grid.getEditorLock().isActive()) {
+              _grid.getEditorLock().commitCurrentEdit();
+              //_grid.resetActiveCell();
+          }
+      } else {
+          return false;
       }
+
+        //      if (_grid.getEditorLock().isActive() || !/move|selectAndMove/.test(_grid.getColumns()[cell.cell].behavior)) {
+        //        return false;
+        //      }
 
       _dragging = true;
       e.stopImmediatePropagation();
