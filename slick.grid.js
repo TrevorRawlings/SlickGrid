@@ -266,7 +266,7 @@ if (typeof Slick === "undefined") {
       if (!initialized) {
         initialized = true;
 
-        viewportW = parseFloat($.css($container[0], "width", true));
+        viewportW = viewPortWidth();
 
         // header columns and cells may have different padding/border skewing width calculations (box-sizing, hello?)
         // calculate the diff so we can set consistent sizes
@@ -1562,6 +1562,25 @@ if (typeof Slick === "undefined") {
           (options.showHeaderRow ? options.headerRowHeight + getVBoxDelta($headerRowScroller) : 0);
     }
 
+    // Workaround to prevent scroll bar from being displayed on IE:
+    //
+    // On IE9 $('.slick-viewport').width() rounds down to the nearest integer.  In theory this shouldn't cause problems
+    // a view port of 969.93px will result in slickgrid autosizing the columns to a width of 969px.  Both html elements
+    // will be the same number of pixels wide ... but the 0.93px causes IE to add a scrollbar.  Only tested on IE9 but I
+    // assume it affects all versions of IE.
+    //
+    // The following setups don't need the fix
+    // - Firefox 17 (tested using Ubuntu VM)
+    // - Chrome 20 (tested using Ubuntu VM)
+    // - Safari 5.1.7 (tested using Windows 7 VM)
+    //
+    // Since this fix causes the grid header to be 1px longer than the grid's body I've only enabled it for IE.
+    function viewPortWidth() {
+        var width = parseFloat($.css($container[0], "width", true));
+
+        return width - ($.browser.msie ? 1 : 0);
+    }
+
     function resizeCanvas() {
       if (!initialized) { return; }
       if (options.autoHeight) {
@@ -1571,7 +1590,9 @@ if (typeof Slick === "undefined") {
       }
 
       numVisibleRows = Math.ceil(viewportH / options.rowHeight);
-      viewportW = parseFloat($.css($container[0], "width", true));
+      viewportW = viewPortWidth();
+
+
       if (!options.autoHeight) {
         $viewport.height(viewportH);
       }
