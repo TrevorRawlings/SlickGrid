@@ -1326,6 +1326,19 @@ if (typeof Slick === "undefined") {
       invalidateRows([row]);
     }
 
+    function updateCellClasses(cellNode, row, cell) {
+      var metadata = data.getItemMetadata && data.getItemMetadata(row);
+      var m = columns[cell];
+
+      if (metadata && metadata.cssPossibleCellClasses) {
+        $(cellNode).removeClass(metadata.cssPossibleCellClasses);
+      }
+
+      if (metadata && metadata.cssCellClasses && metadata.cssCellClasses[m.id]) {
+        $(cellNode).addClass(metadata.cssCellClasses[m.id]);
+      }
+    }
+
     function updateCell(row, cell) {
       var cellNode = getCellNode(row, cell);
       if (!cellNode) {
@@ -1336,6 +1349,7 @@ if (typeof Slick === "undefined") {
       if (currentEditor && activeRow === row && activeCell === cell) {
         currentEditor.loadValue(d);
       } else {
+        updateCellClasses(cellNode, row, cell);
         cellNode.innerHTML = d ? getFormatter(row, m)(row, cell, getDataItemValueForColumn(d, m), m, d) : "";
         invalidatePostProcessingResults(row);
       }
@@ -1358,6 +1372,7 @@ if (typeof Slick === "undefined") {
         if (row === activeRow && columnIdx === activeCell && currentEditor) {
           currentEditor.loadValue(d);
         } else if (d) {
+          updateCellClasses(node, row, columnIdx);
           node.innerHTML = getFormatter(row, m)(row, columnIdx, getDataItemValueForColumn(d, m), m, d);
         } else {
           node.innerHTML = "";
@@ -2095,6 +2110,7 @@ if (typeof Slick === "undefined") {
         if (d) {
           var column = columns[activeCell];
           var formatter = getFormatter(activeRow, column);
+          updateCellClasses(activeCellNode, activeRow, activeCell);
           activeCellNode.innerHTML = formatter(activeRow, activeCell, getDataItemValueForColumn(d, column), column, getDataItem(activeRow));
           invalidatePostProcessingResults(activeRow);
         }
